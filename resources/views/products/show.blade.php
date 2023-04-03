@@ -2,7 +2,11 @@
 
 @section('content')
     <div class="container">
+        @auth
+            <a class="btn btn-warning" href="{{ route('product-edit', $product) }}">Edit</a>
+        @endauth
         <div class="row justify-content-center">
+
             <div class="col-md-6">
                 <div><h1>{{ __('Product name: '.$product->name) }}</h1></div>
 

@@ -49,6 +49,9 @@
                 <div class="col-md-6">
                     <button type="submit" class="btn btn-primary">Filter</button>
                     <a href="{{ route('products') }}" class="btn btn-default">Reset</a>
+                    @auth
+                    <a href="{{ route('product-create') }}" class="btn btn-success">Create Product</a>
+                    @endauth
                 </div>
             </div>
         </form>
@@ -61,9 +64,10 @@
                             <h6 class="card-subtitle mb-2 text-muted">{{ $product->category->name }}</h6>
                             <p class="card-text">{{ $product->description }}</p>
                             @if ($sortBy == 'name')
-                                <p class="card-text">Minimal Price: ${{ $product->prices()->min('price'), 2}}</p>
-                                <p class="card-text">Average Price: ${{ number_format($product->prices()->avg('price'), 2)}}</p>
-                                <p class="card-text">Maximal Price: ${{ $product->prices()->max('price'), 2}}</p>
+                                <p class="card-text">Minimal Price: ${{ $product->prices()->min('price')}}</p>
+                                <p class="card-text">Average Price:
+                                    ${{ number_format($product->prices()->avg('price'), 2)}}</p>
+                                <p class="card-text">Maximal Price: ${{ $product->prices()->max('price')}}</p>
                             @endif
 
 
@@ -73,13 +77,34 @@
                             @if ($sortBy == 'max_price')
                                 <p class="card-text">Maximal Price: ${{ $product->prices()->max('price'), 2}}</p>
                             @endif
-                            <a href="{{ route('product-show', ['id' => $product->id]) }}"
-                               class="card-link">Details</a>
+
+                            <div class="d-flex">
+                                <a class="btn btn-info card-link"
+                                   href="{{ route('product-show', ['id' => $product->id]) }}">Details</a>
+                                @auth
+                                    <a class="btn btn-warning" href="{{ route('product-edit', $product) }}">Edit</a>
+                                @endauth
+
+                                @auth
+                                    <form method="POST" action="{{ route('product-delete',$product->id) }}">
+                                        @csrf
+                                        @method('delete')
+
+                                        <button type='submit' class="btn btn-danger" data-toggle="tooltip">
+                                            Delete
+                                        </button>
+                                    </form>
+                                @endauth
+                            </div>
                         </div>
                     </div>
                 </div>
             @endforeach
 
         </div>
+        <div class="pagination">
+            {{ $products->links() }}
+        </div>
     </div>
+
 @endsection
